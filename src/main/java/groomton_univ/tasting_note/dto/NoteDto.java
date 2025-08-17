@@ -29,22 +29,16 @@ public class NoteDto {
         private LocalDate date;
     }
 
-    @Setter
     @Getter
-    @Builder
-    public static class NoteDetailDto {
-
+    @Setter
+    public static class NoteHomeResponseDto {
         private Long noteId;
         private String name;
-        private String degree;
-        private String category;
-        private String categoryStyle;
-        private String photo;
-        private Integer rating;
         private String content;
-        private List<NoteTagDto> tags;
-        private String label;
+        private Integer rating;
+        private String photo;
         private LocalDate date;
+        private Integer likes;
     }
 
     @Setter

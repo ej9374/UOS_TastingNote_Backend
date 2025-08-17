@@ -7,16 +7,12 @@ import com.google.cloud.storage.Storage;
 import groomton_univ.tasting_note.dto.LabelDto;
 import groomton_univ.tasting_note.dto.NoteCreateMetaDto;
 import groomton_univ.tasting_note.dto.NoteDto;
-import groomton_univ.tasting_note.entity.LabelEntity;
-import groomton_univ.tasting_note.entity.NoteEntity;
-import groomton_univ.tasting_note.entity.NoteTagEntity;
-import groomton_univ.tasting_note.repository.LabelRepository;
-import groomton_univ.tasting_note.repository.NoteRepository;
-import groomton_univ.tasting_note.repository.NoteTagRepository;
-import groomton_univ.tasting_note.repository.UserRepository;
+import groomton_univ.tasting_note.entity.*;
+import groomton_univ.tasting_note.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -31,11 +27,12 @@ public class NoteService {
     private final LabelRepository labelRepository;
     private final UserRepository userRepository;
     private final NoteTagRepository noteTagRepository;
+    private final LikeRepository likeRepository;
+    private final BookmarkRepository bookmarkRepository;
     private final Storage storage;
 
     @Value("${gcp.storage.bucket.name}")
     private String bucketName;
-
 
     public LabelDto.LabelResponseDto createLabel(String category, String content) {
 
@@ -72,7 +69,7 @@ public class NoteService {
         return note.getNoteId();
     }
 
-    public NoteDto.NoteDetailDto createNote(Long noteId, Long userId, NoteCreateMetaDto meta) {
+    public NoteDto.NoteIdDto createNote(Long noteId, Long userId, NoteCreateMetaDto meta) {
         NoteEntity note = noteRepository.findByNoteId(noteId)
                 .orElseThrow(() -> new IllegalArgumentException("note가 존재하지 않습니다."));
         note.setUser(userRepository.findByKakaoId(userId)
@@ -99,38 +96,65 @@ public class NoteService {
         note.setDate(meta.getDate());
         noteRepository.save(note);
 
-        List<NoteTagEntity> findTags = noteTagRepository.findAllByNoteId(noteId);
-        List<NoteDto.NoteTagDto> tags = new ArrayList<>();
-        for (NoteTagEntity tag : findTags) {
-            NoteDto.NoteTagDto tagDto = new NoteDto.NoteTagDto();
-            tagDto.setName(tag.getName());
-            tagDto.setValue(tag.getValue());
-            tags.add(tagDto);
-        }
-
-        NoteDto.NoteDetailDto result = NoteDto.NoteDetailDto.builder()
-                .noteId(note.getNoteId())
-                .name(note.getName())
-                .degree(note.getDegree())
-                .category(note.getCategory())
-                .categoryStyle(note.getCategoryStyle())
-                .photo(note.getPhoto())
-                .rating(note.getRating())
-                .content(note.getContent())
-                .tags(tags)
-                .label(note.getLabel().getContent())
-                .date(note.getDate())
-                .build();
+        NoteDto.NoteIdDto result = new NoteDto.NoteIdDto();
+        result.setNoteId(note.getNoteId());
 
         return result;
     }
 
+    @Transactional
     public NoteDto.likesResponseDto addLike(Long noteId, Long userId) {
 
+        NoteEntity note = noteRepository.findByNoteId(noteId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 노트가 존재하지 않습니다."));
+        UserEntity user = userRepository.findByKakaoId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
+
+        if (likeRepository.existsByUser_KakaoIdAndNote_NoteId(userId, noteId)) {
+            throw new IllegalArgumentException("이미 좋아요를 누른 게시글입니다.");
+        }
+
+        LikeEntity like = new LikeEntity();
+        like.setNote(note);
+        like.setUser(user);
+        likeRepository.save(like);
+
+        Integer likesCount = likeRepository.countByNote_NoteId(noteId);
+        note.setLikesCount(likesCount);
+        noteRepository.save(note);
+
+        NoteDto.likesResponseDto result = new NoteDto.likesResponseDto();
+        result.setNoteId(note.getNoteId());
+        result.setLikes(note.getLikesCount());
+        return result;
     }
 
+    @Transactional
     public NoteDto.bookmarkResponseDto addBookmark(Long noteId, Long userId) {
+        NoteEntity note = noteRepository.findByNoteId(noteId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 노트가 존재하지 않습니다."));
+        UserEntity user = userRepository.findByKakaoId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저가 존재하지 않습니다."));
 
+        if (bookmarkRepository.findByUser_KakaoIdAndNote_NoteId(userId, noteId) != null) {
+            BookmarkEntity mark = bookmarkRepository.findByUser_KakaoIdAndNote_NoteId(userId,noteId);
+            bookmarkRepository.delete(mark);
+            throw new IllegalArgumentException("해당 북마크가 취소되었습니다.");
+        }
+
+        BookmarkEntity bookmark = new BookmarkEntity();
+        bookmark.setNote(note);
+        bookmark.setUser(user);
+        bookmarkRepository.save(bookmark);
+
+        Integer bookmarksCount = bookmarkRepository.countByNote_NoteId(noteId);
+        note.setBookMarksCount(bookmarksCount);
+        noteRepository.save(note);
+
+        NoteDto.bookmarkResponseDto result = new NoteDto.bookmarkResponseDto();
+        result.setNoteId(note.getNoteId());
+        result.setBookmarks(note.getBookMarksCount());
+        return result;
     }
 
     public NoteDto.NoteMoreDetailDto getNote(Long noteId) {

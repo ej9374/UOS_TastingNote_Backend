@@ -30,15 +30,37 @@ public class NoteController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<SuccessResponse<NoteDto.NoteDetailDto>> createNote(
+    public ResponseEntity<SuccessResponse<NoteDto.NoteIdDto>> createNote(
             @RequestPart("file") MultipartFile file,
             @RequestPart("meta") NoteCreateMetaDto meta
     ){
         Long userId = SecurityUtil.getAuthenticatedUser().getKakaoId();
         Long noteId = noteService.uploadImage(file);
-        NoteDto.NoteDetailDto responseDto = noteService.createNote(noteId, userId, meta);
+        NoteDto.NoteIdDto responseDto = noteService.createNote(noteId, userId, meta);
         return SuccessResponse.onSuccess("노트가 생성되었습니다.", HttpStatus.CREATED, responseDto);
     }
+
+    ///
+
+    @PatchMapping("/update/{noteId}")
+    public ResponseEntity<SuccessResponse<NoteDto.NoteIdDto>> updateNote(
+            @PathVariable Long noteId,
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @RequestPart(value = "meta", required = false) NoteCreateMetaDto meta
+    ){
+        Long userId = SecurityUtil.getAuthenticatedUser().getKakaoId();
+        NoteDto.NoteIdDto responseDto = noteService.updateNote
+    }
+
+    @DeleteMapping("/delete/{noteId}")
+    public ResponseEntity<SuccessResponse<NoteDto.NoteIdDto>> deleteNote(@PathVariable Long noteId){
+
+        Integer userId = SecurityUtil.getAuthenticatedUser().getKakaoId();
+        NoteDto.NoteIdDto responseDto = noteService.deleteNote(userId, noteId);
+        return SuccessResponse.onSuccess("노트를 삭제했습니다.", HttpStatus.OK, responseDto);
+    }
+
+    ///
 
     @PostMapping("likes/{noteId}")
     public ResponseEntity<SuccessResponse<NoteDto.likesResponseDto>> likeNote(@PathVariable Long noteId){
@@ -49,7 +71,7 @@ public class NoteController {
 
     @PostMapping("bookmarks/{noteId}")
     public ResponseEntity<SuccessResponse<NoteDto.bookmarkResponseDto>> bookmarkNote(@PathVariable Long noteId){
-        Long userId = SecurityUtil.getAuthenticatedUser().getUserId();
+        Long userId = SecurityUtil.getAuthenticatedUser().getKakaoId();
         NoteDto.bookmarkResponseDto responseDto = noteService.addBookmark(noteId, userId);
         return SuccessResponse.onSuccess("해당 노트에 북마크를 눌렀습니다.", HttpStatus.OK, responseDto);
     }
@@ -61,7 +83,7 @@ public class NoteController {
     }
 
     @GetMapping
-    public ResponseEntity<SuccessResponse<List<NoteDto.NoteDetailDto>>> getHomeNotes(
+    public ResponseEntity<SuccessResponse<List<NoteDto.NoteHomeResponseDto>>> getHomeNotes(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String degree,
             @RequestParam(required = false) Integer time,
@@ -71,7 +93,7 @@ public class NoteController {
     }
 
     @GetMapping
-    public ResponseEntity<SuccessResponse<List<NoteDto.NoteDetailDto>>> getRecommendNotes(){
+    public ResponseEntity<SuccessResponse<List<NoteDto.NoteHomeResponseDto>>> getRecommendNotes(){
 
     }
 }

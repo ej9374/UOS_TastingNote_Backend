@@ -4,9 +4,14 @@ import groomton_univ.tasting_note.entity.NoteEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface NoteRepository extends JpaRepository<NoteEntity, Long> {
     Optional<NoteEntity> findByNoteId(Long noteId);
+
+    List<NoteEntity> findAllByUser_KakaoIdAndCategoryOrderByNoteIdDesc(Long userId, String category);
+
+
 }

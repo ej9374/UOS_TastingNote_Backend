@@ -82,4 +82,5 @@ public class NoteDto {
         private Integer bookmarks;
         private boolean bookmarked;
     }
+
 }

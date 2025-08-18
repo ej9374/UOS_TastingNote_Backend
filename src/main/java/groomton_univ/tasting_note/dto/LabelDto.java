@@ -15,6 +15,7 @@ public class LabelDto {
         private String content;
     }
 
+    @Getter
     @Setter
     public static class LabelResponseDto {
         private Long labelId;

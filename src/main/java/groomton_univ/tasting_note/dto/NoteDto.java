@@ -80,5 +80,6 @@ public class NoteDto {
     public static class bookmarkResponseDto {
         private Long noteId;
         private Integer bookmarks;
+        private boolean bookmarked;
     }
 }

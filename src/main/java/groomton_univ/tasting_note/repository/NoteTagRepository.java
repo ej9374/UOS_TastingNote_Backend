@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface NoteTagRepository extends JpaRepository<NoteTagEntity, Long> {
-    List<NoteTagEntity> findAllByNoteId(Long noteId);
+    List<NoteTagEntity> findAllByNote_NoteId(Long noteId);
 }

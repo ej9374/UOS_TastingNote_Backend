@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface NoteTagRepository extends JpaRepository<NoteTagEntity, Long> {
     List<NoteTagEntity> findAllByNote_NoteId(Long noteId);
+
+    NoteTagEntity findByName(String name);
 }

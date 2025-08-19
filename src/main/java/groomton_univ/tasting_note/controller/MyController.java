@@ -23,21 +23,21 @@ public class MyController {
 
     @GetMapping("/{category}")
     public ResponseEntity<SuccessResponse<List<NoteDto.NoteSummaryDto>>> getCategoryNote(@PathVariable String category){
-        Long userId = ;
+        Long userId = 123L;
         List<NoteDto.NoteSummaryDto> notes = myService.getCategoryNote(userId, category);
         return SuccessResponse.onSuccess("해당 카테고리에 대한 모든 노트를 조회했습니다.", HttpStatus.OK, notes);
     }
 
     @GetMapping("/bookmarks")
     public ResponseEntity<SuccessResponse<List<NoteDto.NoteSummaryDto>>> getBookmarksNote(){
-        Long userId = ;
+        Long userId = 123L;
         List<NoteDto.NoteSummaryDto> notes = myService.getBookmarksNote(userId);
         return SuccessResponse.onSuccess("북마크한 모든 노트를 조회했습니다.", HttpStatus.OK, notes);
     }
 
     @GetMapping("/likes")
     public ResponseEntity<SuccessResponse<List<NoteDto.NoteSummaryDto>>> getLikesNote(){
-        Long userId = ;
+        Long userId = 123L;
         List<NoteDto.NoteSummaryDto> notes = myService.getLikesNote(userId);
         return SuccessResponse.onSuccess("좋아요 누른 모든 노트를 조회했습니다.", HttpStatus.OK, notes);
     }

@@ -20,6 +20,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+import static org.apache.logging.log4j.util.Strings.isBlank;
+
 @RequiredArgsConstructor
 @Service
 public class NoteService {
@@ -234,4 +236,28 @@ public class NoteService {
         return result;
     }
 
+    public List<NoteDto.NoteHomeResponseDto> findHomeNotes(
+            String category, String degree, Integer time, String tagsString
+    ) {
+
+        List<String> tags = Arrays.stream(tagsString.split(","))
+                .map(String::trim) // 앞뒤 공백 제거
+                .toList();
+
+        List<NoteEntity> notes = noteRepository.searchNotes(category, degree, time, tags);
+
+        List<NoteDto.NoteHomeResponseDto> result = new ArrayList<>();
+        for (NoteEntity note : notes) {
+            NoteDto.NoteHomeResponseDto noteHomeDto = new NoteDto.NoteHomeResponseDto();
+            noteHomeDto.setNoteId(note.getNoteId());
+            noteHomeDto.setName(note.getName());
+            noteHomeDto.setContent(note.getContent());
+            noteHomeDto.setRating(note.getRating());
+            noteHomeDto.setPhoto(note.getPhoto());
+            noteHomeDto.setDate(note.getDate());
+            noteHomeDto.setLikes(note.getLikesCount());
+            result.add(noteHomeDto);
+        }
+        return result;
+    }
 }

@@ -21,7 +21,9 @@ public class SearchService {
     private final NoteRepository noteRepository;
 
     public List<NoteDto.NoteHomeResponseDto> getSearchNotes(String name){
-
+        List<NoteEntity> notes = noteRepository.findByNameContainingOrderByNoteIdDesc(name);
+        List<NoteDto.NoteHomeResponseDto> results = entityToDto(notes);
+        return results;
     }
 
     public AutoDto searchAuto(String p){
@@ -42,6 +44,11 @@ public class SearchService {
 
     public List<NoteDto.NoteHomeResponseDto> searchNotesLabel(Long labelId) {
         List<NoteEntity> notes = noteRepository.findAllByLabel_LabelIdOrderByNoteIdDesc(labelId);
+        List<NoteDto.NoteHomeResponseDto> results = entityToDto(notes);
+        return results;
+    }
+
+    public List<NoteDto.NoteHomeResponseDto> entityToDto(List<NoteEntity> notes) {
         List<NoteDto.NoteHomeResponseDto> results = new ArrayList<>();
         for (NoteEntity note : notes) {
             NoteDto.NoteHomeResponseDto result = new NoteDto.NoteHomeResponseDto();

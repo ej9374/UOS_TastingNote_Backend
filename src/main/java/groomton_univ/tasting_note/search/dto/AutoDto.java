@@ -1,4 +1,4 @@
-package groomton_univ.tasting_note.dto;
+package groomton_univ.tasting_note.search.dto;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

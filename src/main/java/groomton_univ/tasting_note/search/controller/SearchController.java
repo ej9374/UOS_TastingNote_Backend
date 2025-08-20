@@ -1,10 +1,10 @@
-package groomton_univ.tasting_note.controller;
+package groomton_univ.tasting_note.search.controller;
 
-import groomton_univ.tasting_note.dto.AutoDto;
-import groomton_univ.tasting_note.dto.LabelDto;
-import groomton_univ.tasting_note.dto.NoteDto;
+import groomton_univ.tasting_note.search.dto.AutoDto;
+import groomton_univ.tasting_note.search.dto.LabelDto;
+import groomton_univ.tasting_note.search.dto.NoteDto;
 import groomton_univ.tasting_note.global.SuccessResponse;
-import groomton_univ.tasting_note.service.SearchService;
+import groomton_univ.tasting_note.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController

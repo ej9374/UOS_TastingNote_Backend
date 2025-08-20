@@ -1,18 +1,17 @@
-package groomton_univ.tasting_note.service;
+package groomton_univ.tasting_note.search.service;
 
-import groomton_univ.tasting_note.dto.AutoDto;
-import groomton_univ.tasting_note.dto.LabelDto;
-import groomton_univ.tasting_note.dto.NoteDto;
+import groomton_univ.tasting_note.search.dto.AutoDto;
+import groomton_univ.tasting_note.search.dto.LabelDto;
+import groomton_univ.tasting_note.search.dto.NoteDto;
 import groomton_univ.tasting_note.entity.LabelEntity;
 import groomton_univ.tasting_note.entity.NoteEntity;
-import groomton_univ.tasting_note.repository.LabelRepository;
-import groomton_univ.tasting_note.repository.NoteRepository;
+import groomton_univ.tasting_note.search.repository.LabelRepository;
+import groomton_univ.tasting_note.search.repository.NoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

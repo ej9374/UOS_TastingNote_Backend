@@ -1,4 +1,4 @@
-package groomton_univ.tasting_note.repository;
+package groomton_univ.tasting_note.search.repository;
 
 import groomton_univ.tasting_note.entity.NoteEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface NoteRepository extends JpaRepository<NoteEntity, Long>, NoteRepositoryCustom {
+public interface NoteRepository extends JpaRepository<NoteEntity, Long> {
     Optional<NoteEntity> findByNoteId(Long noteId);
 
     List<NoteEntity> findAllByUser_KakaoIdAndCategoryOrderByNoteIdDesc(Long userId, String category);

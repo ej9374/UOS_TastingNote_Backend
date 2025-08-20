@@ -1,4 +1,4 @@
-package groomton_univ.tasting_note.repository;
+package groomton_univ.tasting_note.search.repository;
 
 import groomton_univ.tasting_note.entity.LabelEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

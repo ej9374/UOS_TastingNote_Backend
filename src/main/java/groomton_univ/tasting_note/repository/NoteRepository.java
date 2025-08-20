@@ -19,4 +19,7 @@ public interface NoteRepository extends JpaRepository<NoteEntity, Long>, NoteRep
     List<NoteEntity> findAllByLabel_LabelIdOrderByNoteIdDesc(Long labelId);
 
     List<NoteEntity> findByNameContainingOrderByNoteIdDesc(String name);
+
+    @Query("select distinct n.name from NoteEntity n where lower(n.name) like lower(concat('%', :q, '%')) order by n.name asc")
+    List<String> suggestNames(String q);
 }

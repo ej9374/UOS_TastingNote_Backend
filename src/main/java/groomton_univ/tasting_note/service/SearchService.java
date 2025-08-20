@@ -28,13 +28,7 @@ public class SearchService {
     }
 
     public AutoDto searchAuto(String p){
-        List<NoteEntity> notes = noteRepository.findByNameContainingOrderByNoteIdDesc(p);
-        List<String> names = notes
-                .stream()
-                .map(NoteEntity::getName)
-                .distinct()
-                .limit(10)
-                .toList();
+        List<String> names = noteRepository.suggestNames(p);
         AutoDto autoDto = new AutoDto();
         autoDto.setNames(names);
         return autoDto;

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +28,16 @@ public class SearchService {
     }
 
     public AutoDto searchAuto(String p){
-
+        List<NoteEntity> notes = noteRepository.findByNameContainingOrderByNoteIdDesc(p);
+        List<String> names = notes
+                .stream()
+                .map(NoteEntity::getName)
+                .distinct()
+                .limit(10)
+                .toList();
+        AutoDto autoDto = new AutoDto();
+        autoDto.setNames(names);
+        return autoDto;
     }
 
     public List<LabelDto.LabelResponseDto> getLabels() {

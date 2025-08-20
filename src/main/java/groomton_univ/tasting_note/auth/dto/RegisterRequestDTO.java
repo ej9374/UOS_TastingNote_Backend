@@ -9,7 +9,7 @@ import java.util.List;
 public class RegisterRequestDTO {
     private Long kakaoId;
     private String nickname;
-    private String profileImageUrl; // ⭐️ 카카오 기본 프로필 이미지 URL
-    private String kakaoNickname;   // ⭐️ 카카오 기본 닉네임
+    private String profileImageUrl; // 카카오 기본 프로필 이미지 URL
+    private String kakaoNickname;   // 카카오 기본 닉네임
     private List<Long> tagIds;
 }

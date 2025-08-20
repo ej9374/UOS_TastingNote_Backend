@@ -29,12 +29,7 @@ public class UserController {
 
         // 1. @AuthenticationPrincipal을 통해 주입받은 UserEntity가 null인지 확인
         if (user == null) {
-            // 이 경우는 JwtAuthenticationFilter에서 토큰이 유효하지 않다고 판단하여 요청이 거부되므로,
-            // 사실상 이 컨트롤러 메소드까지 요청이 도달했다면 user는 항상 null이 아닙니다.
-            // 하지만 방어적인 코드를 위해 체크할 수 있습니다.
             log.warn("인증된 사용자 정보를 찾을 수 없습니다.");
-            // SecurityConfig에서 .anyRequest().authenticated() 설정에 따라 401 Unauthorized가 자동으로 응답됩니다.
-            // 따라서 별도의 에러 응답을 만들 필요는 없습니다.
         }
 
         log.info("현재 로그인된 사용자: Nickname = {}, KakaoID = {}", user.getNickname(), user.getKakaoId());

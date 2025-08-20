@@ -39,7 +39,7 @@ public class KakaoService {
         Optional<UserEntity> existingUser = userRepository.findByKakaoId(userInfo.getId());
 
         if (existingUser.isPresent()) {
-            // Case A: 기존 회원일 경우
+            // Case 1: 기존 회원일 경우
             UserEntity user = existingUser.get();
             String serviceAccessToken = jwtProvider.createToken(user.getKakaoId());
             log.info("[Kakao Service] Existing user login. Kakao ID: {}", user.getKakaoId());
@@ -49,7 +49,7 @@ public class KakaoService {
                     .accessToken(serviceAccessToken)
                     .build();
         } else {
-            // Case B: 신규 회원일 경우
+            // Case 2: 신규 회원일 경우
             log.info("[Kakao Service] New user detected. Needs registration. Kakao ID: {}", userInfo.getId());
             KakaoUserInfoResponseDTO.KakaoAccount.Profile profile = userInfo.getKakaoAccount().getProfile();
 
@@ -95,11 +95,9 @@ public class KakaoService {
                 .bodyToMono(KakaoUserInfoResponseDTO.class)
                 .block();
 
-        // --- 여기서부터 카카오에서 받은 정보를 로그로 자세히 출력합니다 ---
         log.info("======================================================");
         log.info("[Kakao API] User Info Response Received");
 
-// DTO에 존재하는 필드만 안전하게 호출합니다.
         if (userInfo != null) {
             log.info("회원번호 (id): {}", userInfo.getId());
 

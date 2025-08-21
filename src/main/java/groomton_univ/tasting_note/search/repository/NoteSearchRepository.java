@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface NoteRepository extends JpaRepository<NoteEntity, Long> {
+public interface NoteSearchRepository extends JpaRepository<NoteEntity, Long> {
     Optional<NoteEntity> findByNoteId(Long noteId);
 
     List<NoteEntity> findAllByUser_KakaoIdAndCategoryOrderByNoteIdDesc(Long userId, String category);

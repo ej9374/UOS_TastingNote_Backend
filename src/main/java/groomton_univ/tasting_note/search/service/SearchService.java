@@ -5,11 +5,12 @@ import groomton_univ.tasting_note.search.dto.LabelDto;
 import groomton_univ.tasting_note.search.dto.NoteDto;
 import groomton_univ.tasting_note.entity.LabelEntity;
 import groomton_univ.tasting_note.entity.NoteEntity;
-import groomton_univ.tasting_note.search.repository.LabelRepository;
-import groomton_univ.tasting_note.search.repository.NoteRepository;
+import groomton_univ.tasting_note.search.repository.LabelSearchRepository;
+import groomton_univ.tasting_note.search.repository.NoteSearchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Qualifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,8 +18,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SearchService {
 
-    private final LabelRepository labelRepository;
-    private final NoteRepository noteRepository;
+    private final LabelSearchRepository labelRepository;
+
+    private final NoteSearchRepository noteRepository;
 
     public List<NoteDto.NoteHomeResponseDto> getSearchNotes(String name){
         List<NoteEntity> notes = noteRepository.findByNameContainingOrderByNoteIdDesc(name);

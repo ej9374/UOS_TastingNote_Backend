@@ -36,8 +36,10 @@ out/
 ### VS Code ###
 .vscode/
 
+
 application.properties
+application-local.properties
 tasting-note-storage-key.json
 tasting-note-gemini-key.json
 .env
-application-local.properties
+

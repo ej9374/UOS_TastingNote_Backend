@@ -36,6 +36,6 @@ out/
 ### VS Code ###
 .vscode/
 
-src/main/resources/application.properties
-src/main/resources/tasting-note-storage-key.json
-src/main/resources/tasting-note-gemini-key.json
+/src/main/resources/application.properties
+/src/main/resources/tasting-note-storage-key.json
+/src/main/resources/tasting-note-gemini-key.json

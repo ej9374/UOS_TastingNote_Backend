@@ -37,12 +37,13 @@ public class SecurityConfig {
                 // 5. 요청 경로별 접근 권한 설정
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
+                                // ⭐️ 양쪽 브랜치의 허용 경로를 모두 포함합니다.
                                 .requestMatchers(
                                         "/api/v1/auth/kakao",
                                         "/api/v1/auth/register",
                                         "/api/notes/note/**",
                                         "/api/notes"
-                                        )
+                                )
                                 .permitAll()
                                 .anyRequest().authenticated() // 카카오 로그인 경로는 누구나 접근 허용
                 )

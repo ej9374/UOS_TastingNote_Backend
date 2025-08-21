@@ -7,6 +7,7 @@ import groomton_univ.tasting_note.note.dto.NoteCreateMetaDto;
 import groomton_univ.tasting_note.note.dto.NoteDto;
 import groomton_univ.tasting_note.entity.*;
 import groomton_univ.tasting_note.note.repository.*;
+import groomton_univ.tasting_note.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -235,10 +236,16 @@ public class NoteService {
     public List<NoteDto.NoteHomeResponseDto> findHomeNotes(
             String category, String degree, Integer time, String tagsString
     ) {
+        List<String> tags = new ArrayList<>();
+        if (tagsString != null) {
+            tags = Arrays.stream(tagsString.split(","))
+                    .map(String::trim) // 앞뒤 공백 제거
+                    .toList();
+        } else {
+            tags = null;
+        }
 
-        List<String> tags = Arrays.stream(tagsString.split(","))
-                .map(String::trim) // 앞뒤 공백 제거
-                .toList();
+
 
         List<NoteEntity> notes = noteRepository.searchNotes(category, degree, time, tags);
 

@@ -57,7 +57,7 @@ public class NoteController {
     }
 
     @GetMapping("/note/{noteId}")
-    public ResponseEntity<SuccessResponse<NoteDto.NoteMoreDetailDto>> getNote(@RequestParam Long noteId) {
+    public ResponseEntity<SuccessResponse<NoteDto.NoteMoreDetailDto>> getNote(@PathVariable Long noteId) {
         NoteDto.NoteMoreDetailDto responseDto = noteService.getNote(noteId);
         return SuccessResponse.onSuccess("해당 노트를 조회했습니다.", HttpStatus.OK, responseDto);
     }
@@ -73,7 +73,7 @@ public class NoteController {
         return SuccessResponse.onSuccess("홈 화면을 조회했습니다.", HttpStatus.OK, results);
     }
 
-    @GetMapping
+    @GetMapping("/recommend")
     public ResponseEntity<SuccessResponse<List<NoteDto.NoteHomeResponseDto>>> getRecommendNotes(){
         UserEntity user = ((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         Long userId = user.getKakaoId();

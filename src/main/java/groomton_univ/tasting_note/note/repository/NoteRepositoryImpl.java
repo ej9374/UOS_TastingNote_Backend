@@ -17,36 +17,32 @@ public class NoteRepositoryImpl implements NoteRepositoryCustom {
 
     @Override
     public List<NoteEntity> searchNotes(String category, String degree, Integer days, List<String> tags) {
-        QNoteEntity note = QNoteEntity.noteEntity;
-        QNoteTagEntity noteTag = QNoteTagEntity.noteTagEntity;
+        QNoteEntity n = QNoteEntity.noteEntity;
+        QNoteTagEntity nt = QNoteTagEntity.noteTagEntity;
 
         BooleanBuilder builder = new BooleanBuilder();
+        if (category != null && !category.isBlank()) builder.and(n.category.eq(category));
+        if (degree != null && !degree.isBlank())     builder.and(n.degree.eq(degree));
+        if (days != null)                             builder.and(n.date.goe(LocalDate.now().minusDays(days)));
 
-        if (category != null && !category.isBlank()) {
-            builder.and(note.category.eq(category));
-        }
-
-        if (degree != null && !degree.isBlank()) {
-            builder.and(note.degree.eq(degree));
-        }
-
-        if (days != null) {
-            builder.and(note.date.goe(LocalDate.now().minusDays(days)));
-        }
-
-        JPAQuery<NoteEntity> query = queryFactory
-                .selectFrom(note)
-                .leftJoin(noteTag.note, note).on(noteTag.note.eq(note))
-                .where(builder)
-                .distinct();
+        JPAQuery<NoteEntity> q = queryFactory
+                .selectDistinct(n)
+                .from(n)
+                .where(builder);
 
         if (tags != null && !tags.isEmpty()) {
-            query.where(
-                    noteTag.name.in(tags).and(noteTag.value.goe(2.5))
-            ).groupBy(note.noteId).having(noteTag.name.countDistinct().eq((long) tags.size()));
+            q.innerJoin(nt).on(nt.note.eq(n))
+                    .where(
+                            nt.name.in(tags)
+                            // nt.value가 Integer면 2.5 비교는 불가 → 3 이상으로 해석
+                            // nt.value가 Double이면 아래 줄을 goe(2.5)로 바꾸세요.
+                            , nt.value.goe(3)
+                    )
+                    .groupBy(n.noteId)
+                    .having(nt.name.countDistinct().eq((long) tags.size()));
         }
 
-        return query.orderBy(note.noteId.desc()).fetch();
+        return q.orderBy(n.noteId.desc()).fetch();
     }
 
 }

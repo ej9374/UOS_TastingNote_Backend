@@ -55,7 +55,7 @@ public class KakaoService {
 
             UserInfoForRegisterDTO userInfoDto = UserInfoForRegisterDTO.builder()
                     .kakaoId(userInfo.getId())
-                    .nickname(profile.getNickname())
+                    .kakaoNickname(profile.getNickname())
                     .profileImageUrl(profile.getProfileImageUrl())
                     .build();
 

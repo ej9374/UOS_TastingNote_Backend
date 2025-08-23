@@ -1,5 +1,9 @@
 package groomton_univ.tasting_note.user.service;
 
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageException;
 import groomton_univ.tasting_note.entity.UserEntity;
 import groomton_univ.tasting_note.entity.UserPreferenceEntity;
 import groomton_univ.tasting_note.entity.UserTagEntity;
@@ -13,12 +17,19 @@ import groomton_univ.tasting_note.user.repository.UserRepository;
 import groomton_univ.tasting_note.user.repository.UserTagRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,7 +40,10 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserPreferenceRepository userPreferenceRepository;
     private final UserTagRepository userTagRepository;
-    private final FileUploadService fileUploadService;
+    private final Storage storage;
+
+    @Value("${gcp.storage.bucket.name}")
+    private String bucketName;
 
     public UserResponseDto getMyInfo(UserEntity user) {
         List<UserPreferenceEntity> preferences = userPreferenceRepository.findByUser(user);
@@ -93,20 +107,74 @@ public class UserService {
     public UserResponseDto updateMyInfo(UserEntity user, UserUpdateRequestDto requestDto, MultipartFile profileImage) {
         // 닉네임 업데이트 (요청이 있는 경우)
         if (requestDto != null && requestDto.getNickname() != null && !requestDto.getNickname().isEmpty()) {
+            String newNickname = requestDto.getNickname();
+
+            // 닉네임 중복 검사 로직 (조건부)
+            // 변경하려는 닉네임이 자신의 카카오 닉네임과 다른 경우에만 중복 검사 수행
+            if (!newNickname.equals(user.getKakaoNickname())) {
+                Optional<UserEntity> userWithSameNickname = userRepository.findByNickname(newNickname);
+
+                // 닉네임이 이미 존재하고, 그 닉네임의 주인이 현재 사용자가 아닐 경우
+                if (userWithSameNickname.isPresent() && !userWithSameNickname.get().getKakaoId().equals(user.getKakaoId())) {
+                    throw new IllegalArgumentException("이미 사용 중인 닉네임입니다.");
+                }
+            }
+
             user.setNickname(requestDto.getNickname());
             log.info("사용자 닉네임 변경: KakaoId = {}, New Nickname = {}", user.getKakaoId(), requestDto.getNickname());
         }
 
         // 프로필 이미지 업데이트 (파일이 있는 경우)
+        // GCS를 이용한 프로필 이미지 업로드 로직 시작
         if (profileImage != null && !profileImage.isEmpty()) {
-            String newImageUrl = fileUploadService.upload(profileImage, "profile-images");
-            user.setProfileImageUrl(newImageUrl);
-            log.info("사용자 프로필 이미지 변경: KakaoId = {}, New Image URL = {}", user.getKakaoId(), newImageUrl);
+            log.info("새로운 프로필 이미지 감지. GCS 업로드를 시작합니다.");
+
+            // 기존 이미지 GCS에서 삭제
+            String oldImageUrl = user.getProfileImageUrl();
+            if (oldImageUrl != null && oldImageUrl.startsWith("https://storage.googleapis.com/")) {
+                try {
+                    String prefix = String.format("https://storage.googleapis.com/%s/", bucketName);
+                    String encodedObjectName = oldImageUrl.substring(prefix.length());
+
+                    // URL 인코딩된 파일명을 실제 경로로 디코딩
+                    String objectName = URLDecoder.decode(encodedObjectName, StandardCharsets.UTF_8);
+
+                    // storage.delete()의 반환값(boolean)으로 실제 삭제 성공 여부 확인
+                    boolean deleted = storage.delete(BlobId.of(bucketName, objectName));
+
+                    if (deleted) {
+                        log.info("기존 프로필 이미지 GCS에서 삭제 성공: {}", objectName);
+                    } else {
+                        log.warn("기존 프로필 이미지 GCS에서 삭제 실패 (파일을 찾을 수 없음): {}", objectName);
+                    }
+                } catch (Exception e) {
+                    log.warn("기존 프로필 이미지 GCS 삭제 중 예외 발생. URL: {}", oldImageUrl, e);
+                }
+            }
+
+            // 새 이미지 GCS에 업로드
+            String newFilename = "profile-images/" + UUID.randomUUID() + "_" + profileImage.getOriginalFilename();
+            BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, newFilename)
+                    .setContentType(profileImage.getContentType())
+                    .build();
+            try {
+                storage.create(blobInfo, profileImage.getBytes());
+            } catch (IOException | StorageException e) {
+                log.error("GCS 프로필 이미지 업로드 실패", e);
+                throw new IllegalArgumentException("GCS 업로드 중 오류가 발생했습니다.");
+            }
+
+            // 업로드된 파일의 공개 URL 생성 및 UserEntity에 설정
+            String publicUrl = String.format("https://storage.googleapis.com/%s/%s",
+                    bucketName, URLEncoder.encode(newFilename, StandardCharsets.UTF_8));
+            user.setProfileImageUrl(publicUrl);
+            log.info("새로운 프로필 이미지 URL 설정: {}", publicUrl);
         }
+
 
         user.setUpdatedAt(LocalDateTime.now());
 
-        // 3. 변경된 내용을 명시적으로 저장
+        // 변경된 내용을 명시적으로 저장
         userRepository.save(user);
 
         log.info("사용자 정보 수정을 완료했습니다: KakaoId = {}", user.getKakaoId());

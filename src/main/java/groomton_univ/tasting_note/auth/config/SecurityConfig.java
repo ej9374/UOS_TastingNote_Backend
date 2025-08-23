@@ -41,6 +41,7 @@ public class SecurityConfig {
                                         "/api/v1/auth/**",
                                         "/api/notes/note/**",
                                         "/api/notes",
+                                        "/api/search/**",
                                         "/api/v1/user/tags",
                                         "/api/v1/user/nickname/check"
                                 )

@@ -8,10 +8,7 @@ import groomton_univ.tasting_note.entity.UserEntity;
 import groomton_univ.tasting_note.entity.UserPreferenceEntity;
 import groomton_univ.tasting_note.entity.UserTagEntity;
 import groomton_univ.tasting_note.s3.service.FileUploadService;
-import groomton_univ.tasting_note.user.dto.PreferenceUpdateRequestDto;
-import groomton_univ.tasting_note.user.dto.UserResponseDto;
-import groomton_univ.tasting_note.user.dto.UserTagResponseDto;
-import groomton_univ.tasting_note.user.dto.UserUpdateRequestDto;
+import groomton_univ.tasting_note.user.dto.*;
 import groomton_univ.tasting_note.user.repository.UserPreferenceRepository;
 import groomton_univ.tasting_note.user.repository.UserRepository;
 import groomton_univ.tasting_note.user.repository.UserTagRepository;
@@ -179,5 +176,26 @@ public class UserService {
 
         log.info("사용자 정보 수정을 완료했습니다: KakaoId = {}", user.getKakaoId());
         return getMyInfo(user);
+    }
+
+    /**
+     * 닉네임 사용 가능 여부 확인 메소드 (수정)
+     * - 자신의 카카오 닉네임과 동일하면 항상 사용 가능(true)으로 응답
+     */
+    @Transactional(readOnly = true)
+    public boolean isNicknameAvailable(NicknameCheckDto.Request requestDto) {
+        String nickname = requestDto.getNickname();
+        String kakaoNickname = requestDto.getKakaoNickname();
+
+        // 1. 확인하려는 닉네임이 본인의 카카오 닉네임과 같다면, 무조건 사용 가능
+        if (nickname.equals(kakaoNickname)) {
+            log.info("닉네임 중복 확인 요청: '{}' (카카오 닉네임과 동일하여 항상 사용 가능)", nickname);
+            return true;
+        }
+
+        // 2. 카카오 닉네임과 다른 경우에만 DB에서 중복 확인
+        boolean isAvailable = !userRepository.findByNickname(nickname).isPresent();
+        log.info("닉네임 중복 확인 요청: '{}', 사용 가능 여부: {}", nickname, isAvailable);
+        return isAvailable;
     }
 }

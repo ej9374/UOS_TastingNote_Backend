@@ -2,10 +2,7 @@ package groomton_univ.tasting_note.user.controller;
 
 import groomton_univ.tasting_note.entity.UserEntity;
 import groomton_univ.tasting_note.global.SuccessResponse;
-import groomton_univ.tasting_note.user.dto.PreferenceUpdateRequestDto;
-import groomton_univ.tasting_note.user.dto.UserResponseDto;
-import groomton_univ.tasting_note.user.dto.UserTagResponseDto;
-import groomton_univ.tasting_note.user.dto.UserUpdateRequestDto;
+import groomton_univ.tasting_note.user.dto.*;
 import groomton_univ.tasting_note.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,5 +64,15 @@ public class UserController {
 
         UserResponseDto updatedUserInfo = userService.updateMyInfo(user, requestDto, profileImage);
         return SuccessResponse.onSuccess("사용자 정보 수정에 성공했습니다.", HttpStatus.OK, updatedUserInfo);
+    }
+
+    /**
+     * 닉네임 중복 확인 API (POST 방식으로 수정)
+     */
+    @PostMapping("/nickname/check")
+    public ResponseEntity<SuccessResponse<NicknameCheckDto.Response>> checkNickname(@RequestBody NicknameCheckDto.Request requestDto) {
+        boolean isAvailable = userService.isNicknameAvailable(requestDto);
+        NicknameCheckDto.Response responseDto = new NicknameCheckDto.Response(isAvailable);
+        return SuccessResponse.onSuccess("닉네임 사용 가능 여부를 확인했습니다.", HttpStatus.OK, responseDto);
     }
 }

@@ -7,6 +7,6 @@ import lombok.Getter;
 @Builder
 public class UserInfoForRegisterDTO {
     private Long kakaoId;
-    private String nickname;
+    private String kakaoNickname;
     private String profileImageUrl;
 }

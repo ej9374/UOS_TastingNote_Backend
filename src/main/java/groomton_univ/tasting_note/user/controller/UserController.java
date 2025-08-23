@@ -4,6 +4,7 @@ import groomton_univ.tasting_note.entity.UserEntity;
 import groomton_univ.tasting_note.global.SuccessResponse;
 import groomton_univ.tasting_note.user.dto.*;
 import groomton_univ.tasting_note.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -70,7 +71,7 @@ public class UserController {
      * 닉네임 중복 확인 API (POST 방식으로 수정)
      */
     @PostMapping("/nickname/check")
-    public ResponseEntity<SuccessResponse<NicknameCheckDto.Response>> checkNickname(@RequestBody NicknameCheckDto.Request requestDto) {
+    public ResponseEntity<SuccessResponse<NicknameCheckDto.Response>> checkNickname(@Valid @RequestBody NicknameCheckDto.Request requestDto) {
         boolean isAvailable = userService.isNicknameAvailable(requestDto);
         NicknameCheckDto.Response responseDto = new NicknameCheckDto.Response(isAvailable);
         return SuccessResponse.onSuccess("닉네임 사용 가능 여부를 확인했습니다.", HttpStatus.OK, responseDto);

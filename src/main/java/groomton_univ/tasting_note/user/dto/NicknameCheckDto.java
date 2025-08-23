@@ -1,5 +1,7 @@
 package groomton_univ.tasting_note.user.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +15,9 @@ public class NicknameCheckDto {
     @Getter
     @NoArgsConstructor
     public static class Request {
+
+        @Size(min = 2, max = 8, message = "닉네임은 두 글자 이상이어야 합니다.")
+        @NotBlank(message = "닉네임은 비어 있을 수 없습니다.")
         private String nickname;
         private String kakaoNickname;
     }

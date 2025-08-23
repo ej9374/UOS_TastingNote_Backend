@@ -42,7 +42,8 @@ public class SecurityConfig {
                                         "/api/v1/auth/kakao",
                                         "/api/v1/auth/register",
                                         "/api/notes/note/**",
-                                        "/api/notes"
+                                        "/api/notes",
+                                        "/api/search/**"
                                 )
                                 .permitAll()
                                 .anyRequest().authenticated() // 카카오 로그인 경로는 누구나 접근 허용

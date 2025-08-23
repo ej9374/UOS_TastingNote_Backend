@@ -42,4 +42,5 @@ application-local.properties
 tasting-note-storage-key.json
 tasting-note-gemini-key.json
 .env
+Dockerfile
 

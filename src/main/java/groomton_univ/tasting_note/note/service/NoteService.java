@@ -236,7 +236,7 @@ public class NoteService {
     public List<NoteDto.NoteHomeResponseDto> findHomeNotes(
             String category, String degree, Integer time, String tagsString
     ) {
-        List<String> tags = new ArrayList<>();
+        List<String> tags;
         if (tagsString != null) {
             tags = Arrays.stream(tagsString.split(","))
                     .map(String::trim) // 앞뒤 공백 제거
@@ -244,8 +244,6 @@ public class NoteService {
         } else {
             tags = null;
         }
-
-
 
         List<NoteEntity> notes = noteRepository.searchNotes(category, degree, time, tags);
 
@@ -265,18 +263,22 @@ public class NoteService {
     }
 
     public List<NoteDto.NoteHomeResponseDto> getRecommendHomeNotes(Long userId){
-        NoteEntity userNote = noteRepository.findFirstByUser_KakaoIdOrderByNoteIdDesc(userId);
+        List<NoteEntity> notes = noteRepository.recommendNotes(userId);
 
-        String category = userNote.getCategory();
-        List<NoteTagEntity> tags = noteTagRepository.findAllByNote_NoteId(userNote.getNoteId());
+        List<NoteDto.NoteHomeResponseDto> results = new ArrayList<>();
 
-        List<NoteEntity> notes = noteRepository.findAllByCategoryOrderByNoteIdDesc(category);
-
-        for(NoteEntity note : notes){
-
+        for (NoteEntity note : notes) {
+            NoteDto.NoteHomeResponseDto noteHomeDto = new NoteDto.NoteHomeResponseDto();
+            noteHomeDto.setNoteId(note.getNoteId());
+            noteHomeDto.setName(note.getName());
+            noteHomeDto.setContent(note.getContent());
+            noteHomeDto.setRating(note.getRating());
+            noteHomeDto.setPhoto(note.getPhoto());
+            noteHomeDto.setDate(note.getDate());
+            noteHomeDto.setLikes(note.getLikesCount());
+            results.add(noteHomeDto);
         }
-        return null;
-
+        return results;
     }
 
 

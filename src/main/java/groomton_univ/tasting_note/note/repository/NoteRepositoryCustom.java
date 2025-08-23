@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface NoteRepositoryCustom {
     List<NoteEntity> searchNotes(String category, String degree,Integer days, List<String> tags);
+    List<NoteEntity> recommendNotes(Long userId);
 }

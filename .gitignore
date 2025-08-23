@@ -44,3 +44,4 @@ tasting-note-gemini-key.json
 .env
 Dockerfile
 
+.DS_Store

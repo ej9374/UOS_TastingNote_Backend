@@ -18,4 +18,5 @@ public interface NoteRepository extends JpaRepository<NoteEntity, Long>, NoteRep
     NoteEntity findFirstByUser_KakaoIdOrderByNoteIdDesc(Long userId);
 
     List<NoteEntity> findAllByCategoryOrderByNoteIdDesc(String category);
+
 }

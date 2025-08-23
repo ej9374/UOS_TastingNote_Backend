@@ -43,3 +43,4 @@ tasting-note-storage-key.json
 tasting-note-gemini-key.json
 .env
 
+.DS_Store

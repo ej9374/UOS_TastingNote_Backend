@@ -25,6 +25,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -42,9 +43,13 @@ public class UserService {
     @Value("${gcp.storage.bucket.name}")
     private String bucketName;
 
+    // 사용자 정보 조회 (getMyInfo)
     public UserResponseDto getMyInfo(UserEntity user) {
         List<UserPreferenceEntity> preferences = userPreferenceRepository.findByUser(user);
-        List<UserResponseDto.PreferenceDto> preferenceDtos = UserResponseDto.preferences(preferences);
+
+        // DTO의 새 메소드를 사용해 카테고리별로 그룹화
+        Map<String, List<UserResponseDto.PreferenceDto>> preferencesGroupedByCategory =
+                UserResponseDto.preferencesByCategory(preferences);
 
         log.info("현재 로그인된 사용자 정보 조회를 요청했습니다: KakaoId = {}", user.getKakaoId());
 
@@ -54,8 +59,9 @@ public class UserService {
                 .kakaoNickname(user.getKakaoNickname())
                 .profileImageUrl(user.getProfileImageUrl())
                 .createdAt(user.getCreatedAt())
-                .preferences(preferenceDtos)
+                .preferences(preferencesGroupedByCategory) // 그룹화된 Map을 DTO에 담아 반환
                 .build();
+
     }
 
     @Transactional
@@ -86,15 +92,14 @@ public class UserService {
         return getMyInfo(user);
     }
 
+    // 전체 태그 목록 조회 (getAllUserTags)
     @Transactional(readOnly = true)
-    public List<UserTagResponseDto> getAllUserTags() {
+    // ⭐️ 반환 타입을 구체적인 TagInfo 클래스로 명시
+    public Map<String, List<UserTagResponseDto.TagInfo>> getAllUserTags() {
         List<UserTagEntity> tags = userTagRepository.findAllByOrderByIdAsc();
+        log.info("전체 태그 목록(카테고리별 그룹) 조회를 요청했습니다.");
 
-        log.info("전체 태그 목록 조회를 요청했습니다.");
-
-        return tags.stream()
-                .map(UserTagResponseDto::of)
-                .collect(Collectors.toList());
+        return UserTagResponseDto.from(tags);
     }
 
     /**

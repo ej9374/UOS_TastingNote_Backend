@@ -6,6 +6,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Getter
@@ -17,7 +18,7 @@ public class UserResponseDto {
     private String kakaoNickname;
     private String profileImageUrl;
     private LocalDateTime createdAt;
-    private List<PreferenceDto> preferences;
+    private Map<String, List<PreferenceDto>> preferences;
 
     @Getter
     @Builder
@@ -35,9 +36,14 @@ public class UserResponseDto {
         }
     }
 
-    public static List<PreferenceDto> preferences(List<UserPreferenceEntity> preferences) {
+    /**
+     * 사용자의 취향 목록을 카테고리별로 그룹화하여 반환하는 정적 메소드
+     */
+    public static Map<String, List<PreferenceDto>> preferencesByCategory(List<UserPreferenceEntity> preferences) {
         return preferences.stream()
-                .map(PreferenceDto::of)
-                .collect(Collectors.toList());
+                .collect(Collectors.groupingBy(
+                        p -> p.getUserTag().getCategory(), // 카테고리로 그룹화
+                        Collectors.mapping(PreferenceDto::of, Collectors.toList())
+                ));
     }
 }

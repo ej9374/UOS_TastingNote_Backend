@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
+import java.util.Map;
 
 
 @Slf4j
@@ -49,11 +50,11 @@ public class UserController {
      * 전체 태그 목록 조회 API
      */
     @GetMapping("/tags")
-    public ResponseEntity<SuccessResponse<List<UserTagResponseDto>>> getAllUserTags() {
-        List<UserTagResponseDto> allTags = userService.getAllUserTags();
-        return SuccessResponse.onSuccess("전체 태그 목록 조회에 성공했습니다.", HttpStatus.OK, allTags);
+    // ⭐️ 반환 타입을 Map 형태로 변경
+    public ResponseEntity<SuccessResponse<Map<String, List<UserTagResponseDto.TagInfo>>>> getAllUserTags() {
+        Map<String, List<UserTagResponseDto.TagInfo>> allTagsGroupedByCategory = userService.getAllUserTags();
+        return SuccessResponse.onSuccess("전체 태그 목록 조회에 성공했습니다.", HttpStatus.OK, allTagsGroupedByCategory);
     }
-
     /**
      * 사용자 닉네임, 프로필 이미지 수정 API (새로 추가)
      */

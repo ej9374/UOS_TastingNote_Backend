@@ -32,7 +32,7 @@ public class JwtProvider {
         String token = Jwts.builder()
                 .subject(kakaoId.toString())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24))
+                .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60))
                 .signWith(jwtKey)
                 .compact();
         return token;

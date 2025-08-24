@@ -7,7 +7,6 @@ import com.google.cloud.storage.StorageException;
 import groomton_univ.tasting_note.entity.UserEntity;
 import groomton_univ.tasting_note.entity.UserPreferenceEntity;
 import groomton_univ.tasting_note.entity.UserTagEntity;
-import groomton_univ.tasting_note.s3.service.FileUploadService;
 import groomton_univ.tasting_note.user.dto.*;
 import groomton_univ.tasting_note.user.repository.UserPreferenceRepository;
 import groomton_univ.tasting_note.user.repository.UserRepository;

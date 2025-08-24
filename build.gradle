@@ -32,6 +32,7 @@ dependencies {
 
 	// Database
 	runtimeOnly 'com.mysql:mysql-connector-j'
+	implementation 'com.google.cloud.sql:mysql-socket-factory-connector-j-8:1.+'
 
 	// Utils
 	compileOnly 'org.projectlombok:lombok'

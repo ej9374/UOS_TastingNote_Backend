@@ -63,7 +63,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // ⭐️ 허용할 Origin(출처) 설정
+        // 허용할 Origin(출처) 설정
         configuration.setAllowedOrigins(List.of("http://localhost:3000"));
 
         // 허용할 HTTP Method 설정
@@ -72,7 +72,7 @@ public class SecurityConfig {
         // 허용할 Header 설정
         configuration.setAllowedHeaders(List.of("*"));
 
-        // Credentials(자격 증명) 허용 여부
+        // Credentials(자격 증명) 허용 여부 설정
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

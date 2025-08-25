@@ -75,6 +75,7 @@ public class SecurityConfig {
         // Credentials(자격 증명) 허용 여부 설정
         configuration.setAllowCredentials(true);
 
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration); // 모든 경로에 대해 위 설정 적용
         return source;

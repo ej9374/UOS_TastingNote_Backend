@@ -69,7 +69,8 @@ public class SecurityConfig {
         // 허용할 Origin(출처) 설정
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:3000",
-                "http://127.0.0.1:3000"
+                "http://127.0.0.1:3000",
+                "https://uos-tasting-note-frontend.vercel.app"
         ));
 
         // 허용할 HTTP Method 설정
